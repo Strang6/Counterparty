@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Counterparty</string>
+    <string name="name_inn">Наименование/ИНН контрагента</string>
+    <string name="name">Наименование контрагента</string>
+    <string name="inn">ИНН контрагента</string>
 </resources>
