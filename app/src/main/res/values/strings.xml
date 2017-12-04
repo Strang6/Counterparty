@@ -3,4 +3,7 @@
     <string name="name_inn">Наименование/ИНН контрагента</string>
     <string name="name">Наименование контрагента</string>
     <string name="inn">ИНН контрагента</string>
+    <string name="search">Search</string>
+    <string name="clear_search">Clear Search</string>
+    <string name="map">Показать на карте</string>
 </resources>

@@ -1,10 +1,13 @@
 package com.strang6.counterparty;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Strang6 on 21.11.2017.
  */
 
-public class Counterparty {
+public class Counterparty implements Parcelable{
     private String name, opf, address;
     private String inn, kpp, ogrn;
     private int branchCount;
@@ -26,6 +29,30 @@ public class Counterparty {
         this.branchType = branchType;
         this.type = type;
     }
+
+    protected Counterparty(Parcel in) {
+        name = in.readString();
+        opf = in.readString();
+        address = in.readString();
+        inn = in.readString();
+        kpp = in.readString();
+        ogrn = in.readString();
+        branchCount = in.readInt();
+        branchType = BranchType.valueOf(in.readString());
+        type = Type.valueOf(in.readString());
+    }
+
+    public static final Creator<Counterparty> CREATOR = new Creator<Counterparty>() {
+        @Override
+        public Counterparty createFromParcel(Parcel in) {
+            return new Counterparty(in);
+        }
+
+        @Override
+        public Counterparty[] newArray(int size) {
+            return new Counterparty[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -97,6 +124,24 @@ public class Counterparty {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(name);
+        parcel.writeString(opf);
+        parcel.writeString(address);
+        parcel.writeString(inn);
+        parcel.writeString(kpp);
+        parcel.writeString(ogrn);
+        parcel.writeInt(branchCount);
+        parcel.writeString(branchType.name());
+        parcel.writeString(type.name());
     }
 
     public enum BranchType {
