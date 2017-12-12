@@ -60,6 +60,7 @@ public class RecentViewModel extends AndroidViewModel {
         @Override
         protected Void doInBackground(RecentCounterparty... recentCounterparties) {
             Logger.d("RecentViewModel.DeleteAsyncTask.doInBackground");
+            database.getAddressCoordinatesDAO().deleteAddressById(Integer.toString(recentCounterparties[0].getId()));
             database.getRecentCounterpartyDAO().deleteRecentCounterparty(recentCounterparties[0]);
             return null;
         }
