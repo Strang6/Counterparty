@@ -1,9 +1,22 @@
 <resources>
     <string name="app_name">Counterparty</string>
     <string name="name_inn">Наименование/ИНН контрагента</string>
-    <string name="name">Наименование контрагента</string>
-    <string name="inn">ИНН контрагента</string>
+    <string name="counterparty_name">Наименование контрагента</string>
+    <string name="counterparty_inn">ИНН контрагента</string>
     <string name="search">Search</string>
     <string name="clear_search">Clear Search</string>
     <string name="map">Показать на карте</string>
+    <string name="send_to_messenger">Отправить через мессенджер</string>
+    <string name="name">Наименование\nкомпании</string>
+    <string name="opf">ОПФ</string>
+    <string name="address">Адрес</string>
+    <string name="inn">ИНН</string>
+    <string name="kpp">КПП</string>
+    <string name="ogrn">ОГРН</string>
+    <string name="branch_count">Количество\nфилиалов</string>
+    <string name="branch_type">Тип\nподразделения</string>
+    <string name="type">Тип\nорганизации</string>
+    <string name="recent_counterparty">Недавние контрагенты</string>
+    <string name="favorite_add">Добавить в избранное</string>
+    <string name="favorite_delete">Удалить из избранного</string>
 </resources>

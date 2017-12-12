@@ -1,4 +1,4 @@
-package com.strang6.counterparty;
+package com.strang6.counterparty.ApiServices.deserializers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,6 +8,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.strang6.counterparty.ApiServices.deserializers.CounterpartyDeserializer;
+import com.strang6.counterparty.Counterparty;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

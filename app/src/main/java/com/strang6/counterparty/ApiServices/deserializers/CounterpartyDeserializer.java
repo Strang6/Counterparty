@@ -1,10 +1,11 @@
-package com.strang6.counterparty;
+package com.strang6.counterparty.ApiServices.deserializers;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.strang6.counterparty.Counterparty;
 
 import java.lang.reflect.Type;
 
@@ -28,7 +29,7 @@ public class CounterpartyDeserializer implements JsonDeserializer<Counterparty> 
             int branchCount = data.get("branch_count").getAsInt();
             Counterparty.BranchType branchType = Counterparty.BranchType
                     .valueOf(data.get("branch_type").getAsString());
-            Counterparty.Type type = Counterparty.Type.valueOf(data.get("type").getAsString());
+            Counterparty.OrganizationType type = Counterparty.OrganizationType.valueOf(data.get("type").getAsString());
             counterparty =
                     new Counterparty(name, opf, address, inn, kpp, ogrn, branchCount, branchType, type);
         }

@@ -1,7 +1,11 @@
 package com.strang6.counterparty;
 
+import android.arch.persistence.room.TypeConverters;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.strang6.counterparty.database.converters.BranchTypeConverter;
+import com.strang6.counterparty.database.converters.OrganizationTypeConverter;
 
 /**
  * Created by Strang6 on 21.11.2017.
@@ -11,14 +15,12 @@ public class Counterparty implements Parcelable{
     private String name, opf, address;
     private String inn, kpp, ogrn;
     private int branchCount;
+    @TypeConverters(BranchTypeConverter.class)
     private BranchType branchType;
-    private Type type;
+    @TypeConverters(OrganizationTypeConverter.class)
+    private OrganizationType type;
 
-    public Counterparty(String name) {
-        this.name = name;
-    }
-
-    public Counterparty(String name, String opf, String address, String inn, String kpp, String ogrn, int branchCount, BranchType branchType, Type type) {
+    public Counterparty(String name, String opf, String address, String inn, String kpp, String ogrn, int branchCount, BranchType branchType, OrganizationType type) {
         this.name = name;
         this.opf = opf;
         this.address = address;
@@ -39,7 +41,7 @@ public class Counterparty implements Parcelable{
         ogrn = in.readString();
         branchCount = in.readInt();
         branchType = BranchType.valueOf(in.readString());
-        type = Type.valueOf(in.readString());
+        type = OrganizationType.valueOf(in.readString());
     }
 
     public static final Creator<Counterparty> CREATOR = new Creator<Counterparty>() {
@@ -53,6 +55,19 @@ public class Counterparty implements Parcelable{
             return new Counterparty[size];
         }
     };
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder
+                .append("Наименование компании: ").append(name)
+                .append("; ОПФ: ").append(opf)
+                .append("; Адрес: ").append(address)
+                .append("; ИНН: ").append(inn)
+                .append("; КПП: ").append(kpp)
+                .append("; ОГРН: ").append(ogrn);
+        return stringBuilder.toString();
+    }
 
     public String getName() {
         return name;
@@ -118,11 +133,11 @@ public class Counterparty implements Parcelable{
         this.branchType = branchType;
     }
 
-    public Type getType() {
+    public OrganizationType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(OrganizationType type) {
         this.type = type;
     }
 
@@ -146,9 +161,10 @@ public class Counterparty implements Parcelable{
 
     public enum BranchType {
         MAIN, BRANCH
+
     }
 
-    public enum Type {
+    public enum OrganizationType {
         LEGAL, INDIVIDUAL
     }
 }

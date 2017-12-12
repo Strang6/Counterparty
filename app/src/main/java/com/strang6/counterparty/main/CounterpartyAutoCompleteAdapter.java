@@ -1,4 +1,4 @@
-package com.strang6.counterparty;
+package com.strang6.counterparty.main;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
+
+import com.strang6.counterparty.ApiServices.DaDataService;
+import com.strang6.counterparty.Counterparty;
+import com.strang6.counterparty.Logger;
+import com.strang6.counterparty.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +69,7 @@ public class CounterpartyAutoCompleteAdapter extends BaseAdapter implements Filt
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
+            Logger.d("CounterpartyAutoCompleteAdapter.CounterpartyFilter.performFiltering");
             FilterResults filterResults = new FilterResults();
             if (constraint != null) {
                 List<Counterparty> counterparties = new DaDataService().findCounterparties(constraint.toString());
@@ -75,6 +81,7 @@ public class CounterpartyAutoCompleteAdapter extends BaseAdapter implements Filt
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            Logger.d("CounterpartyAutoCompleteAdapter.CounterpartyFilter.publishResults");
             if (filterResults != null && filterResults.count > 0) {
                 result = (List<Counterparty>) filterResults.values;
                 notifyDataSetChanged();

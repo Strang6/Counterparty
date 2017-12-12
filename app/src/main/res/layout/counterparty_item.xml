@@ -11,13 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        tools:text="@string/name" />
+        tools:text="@string/counterparty_name" />
 
     <TextView
         android:id="@+id/innTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        tools:text="@string/inn" />
+        tools:text="@string/counterparty_inn" />
 
 </LinearLayout>

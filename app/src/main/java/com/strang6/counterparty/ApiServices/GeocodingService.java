@@ -1,8 +1,10 @@
-package com.strang6.counterparty;
+package com.strang6.counterparty.ApiServices;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.strang6.counterparty.ApiServices.deserializers.GeocodingDeserializer;
+import com.strang6.counterparty.Logger;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -21,6 +23,8 @@ public class GeocodingService {
     url = "https://maps.googleapis.com/maps/api/geocode/";
 
     public LatLng findLatLng(String address) {
+        Logger.d("GeocodingService.findLatLng(address = " + address + ")");
+
         OkHttpClient client = new OkHttpClient();
         String req = url + "json?address=";
         try {
@@ -41,9 +45,9 @@ public class GeocodingService {
     }
 
     private LatLng jsonToLatLng(String json) {
-        LatLng latLng = null;
+        Logger.d("GeocodingService.jsonToLatLng(json = " + json + ")");
+
         Gson gson = new GsonBuilder().registerTypeAdapter(LatLng.class, new GeocodingDeserializer()).create();
-        latLng = gson.fromJson(json, LatLng.class);
-        return latLng;
+        return gson.fromJson(json, LatLng.class);
     }
 }

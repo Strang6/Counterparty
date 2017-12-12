@@ -1,8 +1,11 @@
-package com.strang6.counterparty;
+package com.strang6.counterparty.ApiServices;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.strang6.counterparty.Counterparty;
+import com.strang6.counterparty.ApiServices.deserializers.CounterpartyListDeserializer;
+import com.strang6.counterparty.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -23,6 +26,8 @@ public class DaDataService {
             token = "84de1dfbc2cd5f109e9e4f3f8a283c1f64dfda33";
 
     public List<Counterparty> findCounterparties(String query) {
+        Logger.d("DaDataService.findCounterparties(query = " + query + ")");
+
         String content = "{ \"query\": \"" + query + "\" }";
         MediaType contentType = MediaType.parse("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(contentType, content);
@@ -45,6 +50,8 @@ public class DaDataService {
     }
 
     private List<Counterparty> jsonToList(String json) {
+        Logger.d("DaDataService.jsonToList(json = " + json + ")");
+
         Type type = new TypeToken<List<Counterparty>>() {
         }.getType();
         Gson gson = new GsonBuilder()

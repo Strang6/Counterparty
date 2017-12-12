@@ -1,4 +1,4 @@
-package com.strang6.counterparty;
+package com.strang6.counterparty.ApiServices.deserializers;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.JsonArray;
@@ -20,11 +20,13 @@ public class GeocodingDeserializer implements JsonDeserializer<LatLng> {
         LatLng latLng = null;
         if (json.isJsonObject()) {
             JsonArray results = json.getAsJsonObject().get("results").getAsJsonArray();
-            JsonObject geometry = results.get(0).getAsJsonObject().getAsJsonObject("geometry");
-            JsonObject location = geometry.getAsJsonObject("location");
-            Double lat = location.get("lat").getAsDouble();
-            Double lng = location.get("lng").getAsDouble();
-            latLng = new LatLng(lat, lng);
+            if (results.size() > 0) {
+                JsonObject geometry = results.get(0).getAsJsonObject().getAsJsonObject("geometry");
+                JsonObject location = geometry.getAsJsonObject("location");
+                Double lat = location.get("lat").getAsDouble();
+                Double lng = location.get("lng").getAsDouble();
+                latLng = new LatLng(lat, lng);
+            }
         }
         return latLng;
     }
