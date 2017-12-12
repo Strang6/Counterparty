@@ -8,7 +8,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.strang6.counterparty.ApiServices.deserializers.CounterpartyDeserializer;
 import com.strang6.counterparty.Counterparty;
 
 import java.lang.reflect.Type;

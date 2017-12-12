@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 
 import com.strang6.counterparty.Counterparty;
 import com.strang6.counterparty.details.DetailsActivity;
