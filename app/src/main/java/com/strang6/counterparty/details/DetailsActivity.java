@@ -81,15 +81,17 @@ public class DetailsActivity extends AppCompatActivity implements DetailsViewMod
     public boolean onPrepareOptionsMenu(Menu menu) {
         Logger.d("DetailsActivity.onPrepareOptionsMenu");
 
-        MenuItem item = menu.findItem(R.id.favorite_check);
-        item.setChecked(viewModel.getRecentCounterparty().isFavorite());
-        if (item.isChecked()) {
-            item.setIcon(R.drawable.btn_star_on);
-            item.setTitle(R.string.favorite_delete);
-        }
-        else {
-            item.setIcon(R.drawable.btn_star_off);
-            item.setTitle(R.string.favorite_add);
+        RecentCounterparty recentCounterparty = viewModel.getRecentCounterparty();
+        if (recentCounterparty != null) {
+            MenuItem item = menu.findItem(R.id.favorite_check);
+            item.setChecked(recentCounterparty.isFavorite());
+            if (item.isChecked()) {
+                item.setIcon(R.drawable.btn_star_on);
+                item.setTitle(R.string.favorite_delete);
+            } else {
+                item.setIcon(R.drawable.btn_star_off);
+                item.setTitle(R.string.favorite_add);
+            }
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -116,6 +118,8 @@ public class DetailsActivity extends AppCompatActivity implements DetailsViewMod
         branchCountTextView.setText(Integer.toString(counterparty.getBranchCount()));
         branchTypeTextView.setText(counterparty.getBranchType() == Counterparty.BranchType.MAIN ? "головная организация" : "филиал");
         typeTextView.setText(counterparty.getType() == Counterparty.OrganizationType.LEGAL ? "юридическое лицо" : "индивидуальный предприниматель");
+
+        invalidateOptionsMenu();
     }
 
     public void onSendClick(View view) {
