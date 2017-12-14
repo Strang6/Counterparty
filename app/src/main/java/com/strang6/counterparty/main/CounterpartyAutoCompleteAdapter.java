@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -21,13 +22,16 @@ import java.util.List;
  * Created by Strang6 on 06.11.2017.
  */
 
-public class CounterpartyAutoCompleteAdapter extends BaseAdapter implements Filterable {
+public class CounterpartyAutoCompleteAdapter extends ArrayAdapter<Counterparty> {
     private final Context context;
     private List<Counterparty> result;
+    private int layoutResourceId;
 
-    public CounterpartyAutoCompleteAdapter(Context context) {
+    public CounterpartyAutoCompleteAdapter(Context context, int layoutResourceId, List<Counterparty> result) {
+        super(context, layoutResourceId, result);
         this.context = context;
-        this.result = new ArrayList<>();
+        this.layoutResourceId = layoutResourceId;
+        this.result = result;
     }
 
     @Override
@@ -50,7 +54,7 @@ public class CounterpartyAutoCompleteAdapter extends BaseAdapter implements Filt
         if (view == null) {
             view = LayoutInflater
                     .from(context)
-                    .inflate(R.layout.counterparty_item, viewGroup, false);
+                    .inflate(layoutResourceId, viewGroup, false);
         }
         Counterparty counterparty = getItem(i);
         TextView nameTextView = view.findViewById(R.id.nameTextView);
@@ -58,36 +62,5 @@ public class CounterpartyAutoCompleteAdapter extends BaseAdapter implements Filt
         TextView innTextView = view.findViewById(R.id.innTextView);
         innTextView.setText(counterparty.getInn());
         return view;
-    }
-
-    @Override
-    public Filter getFilter() {
-        return new CounterpartyFilter();
-    }
-
-    private class CounterpartyFilter extends Filter {
-
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            Logger.d("CounterpartyAutoCompleteAdapter.CounterpartyFilter.performFiltering");
-            FilterResults filterResults = new FilterResults();
-            if (constraint != null) {
-                List<Counterparty> counterparties = new DaDataService().findCounterparties(constraint.toString());
-                filterResults.values = counterparties;
-                filterResults.count = counterparties.size();
-            }
-            return filterResults;
-        }
-
-        @Override
-        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            Logger.d("CounterpartyAutoCompleteAdapter.CounterpartyFilter.publishResults");
-            if (filterResults != null && filterResults.count > 0) {
-                result = (List<Counterparty>) filterResults.values;
-                notifyDataSetChanged();
-            } else {
-                notifyDataSetChanged();
-            }
-        }
     }
 }

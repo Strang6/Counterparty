@@ -3,9 +3,11 @@ package com.strang6.counterparty.ApiServices.deserializers;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.strang6.counterparty.Counterparty;
+import com.strang6.counterparty.Logger;
 
 import java.lang.reflect.Type;
 
@@ -19,12 +21,22 @@ public class CounterpartyDeserializer implements JsonDeserializer<Counterparty> 
     public Counterparty deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         Counterparty counterparty = null;
         if (json.isJsonObject()) {
+            Logger.d("CounterpartyDeserializer: " + json.toString());
             JsonObject data = json.getAsJsonObject().getAsJsonObject("data");
             String name = data.getAsJsonObject("name").get("full").getAsString();
-            String opf = data.getAsJsonObject("opf").get("short").getAsString();
+            String opf = null;
+            if (data.has("opf") && ! data.get("opf").isJsonNull()) {
+                opf = data.getAsJsonObject("opf").get("short").getAsString();
+            }
             String address = data.getAsJsonObject("address").get("value").getAsString();
-            String inn = data.get("inn").getAsString();
-            String kpp = data.get("kpp").getAsString();
+            String inn = null;
+            if (data.has("inn") && ! data.get("inn").isJsonNull()) {
+                inn = data.get("inn").getAsString();
+            }
+            String kpp = null;
+            if (data.has("kpp") && ! data.get("kpp").isJsonNull()) {
+                kpp = data.get("kpp").getAsString();
+            }
             String ogrn = data.get("ogrn").getAsString();
             int branchCount = data.get("branch_count").getAsInt();
             Counterparty.BranchType branchType = Counterparty.BranchType
