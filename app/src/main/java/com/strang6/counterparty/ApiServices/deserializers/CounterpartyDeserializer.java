@@ -24,17 +24,17 @@ public class CounterpartyDeserializer implements JsonDeserializer<Counterparty> 
             Logger.d("CounterpartyDeserializer: " + json.toString());
             JsonObject data = json.getAsJsonObject().getAsJsonObject("data");
             String name = data.getAsJsonObject("name").get("full").getAsString();
-            String opf = null;
-            if (data.has("opf") && ! data.get("opf").isJsonNull()) {
+            String opf = "-";
+            if (! data.get("opf").isJsonNull()) {
                 opf = data.getAsJsonObject("opf").get("short").getAsString();
             }
             String address = data.getAsJsonObject("address").get("value").getAsString();
-            String inn = null;
-            if (data.has("inn") && ! data.get("inn").isJsonNull()) {
+            String inn = "-";
+            if (! data.get("inn").isJsonNull()) {
                 inn = data.get("inn").getAsString();
             }
-            String kpp = null;
-            if (data.has("kpp") && ! data.get("kpp").isJsonNull()) {
+            String kpp = "-";
+            if (! data.get("kpp").isJsonNull()) {
                 kpp = data.get("kpp").getAsString();
             }
             String ogrn = data.get("ogrn").getAsString();
