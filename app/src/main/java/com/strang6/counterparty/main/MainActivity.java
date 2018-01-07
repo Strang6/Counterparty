@@ -19,7 +19,7 @@ import com.strang6.counterparty.resent.RecentActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MainViewModel.CounterpartyListener, TextWatcher {
+public class MainActivity extends AppCompatActivity implements MainViewModel.CounterpartyListener {
 
     private AutoCompleteTextView counterpartyTextView;
     private MainViewModel viewModel;
@@ -33,8 +33,6 @@ public class MainActivity extends AppCompatActivity implements MainViewModel.Cou
         setContentView(R.layout.activity_main);
 
         counterpartyTextView = findViewById(R.id.counterpartyTextView);
-        counterpartyTextView.setThreshold(4);
-        counterpartyTextView.addTextChangedListener(this);
         adapter = new CounterpartyAutoCompleteAdapter(this, R.layout.counterparty_item, new ArrayList<Counterparty>());
         counterpartyTextView.setAdapter(adapter);
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
@@ -47,6 +45,26 @@ public class MainActivity extends AppCompatActivity implements MainViewModel.Cou
                 counterpartyTextView.setText(counterparty.getName());
                 viewModel.onCounterpartyClick(counterparty);
                 isSetText = false;
+            }
+        });
+
+        counterpartyTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Logger.d("MainActivity.onTextChanged");
+                if (!isSetText) {
+                    viewModel.onTextChanged(charSequence);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
     }
@@ -66,28 +84,8 @@ public class MainActivity extends AppCompatActivity implements MainViewModel.Cou
     }
 
     @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        Logger.d("MainActivity.onTextChanged");
-        if (!isSetText) {
-            viewModel.onTextChanged(charSequence);
-        }
-    }
-
-    @Override
     public void onFindCounterparties(List<Counterparty> counterparties) {
         Logger.d("MainActivity.onFindCounterparties");
-        adapter = new CounterpartyAutoCompleteAdapter(this, R.layout.counterparty_item, counterparties);
-        counterpartyTextView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        Logger.d("MainActivity.beforeTextChanged");
-    }
-
-    @Override
-    public void afterTextChanged(Editable editable) {
-        Logger.d("MainActivity.afterTextChanged");
+        adapter.setResult(counterparties);
     }
 }

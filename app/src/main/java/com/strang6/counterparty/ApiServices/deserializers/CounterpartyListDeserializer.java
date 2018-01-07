@@ -22,7 +22,7 @@ public class CounterpartyListDeserializer implements JsonDeserializer<List<Count
     @Override
     public List<Counterparty> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         List<Counterparty> counterparties = new ArrayList<>();
-        if (json.isJsonObject()) {
+        if (json.isJsonObject() && json.getAsJsonObject().has("suggestions")) {
             JsonArray suggestions = json.getAsJsonObject().getAsJsonArray("suggestions");
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(Counterparty.class, new CounterpartyDeserializer())

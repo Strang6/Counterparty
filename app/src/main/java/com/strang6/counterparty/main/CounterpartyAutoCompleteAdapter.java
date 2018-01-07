@@ -5,17 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.TextView;
 
-import com.strang6.counterparty.ApiServices.DaDataService;
 import com.strang6.counterparty.Counterparty;
-import com.strang6.counterparty.Logger;
 import com.strang6.counterparty.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +26,11 @@ public class CounterpartyAutoCompleteAdapter extends ArrayAdapter<Counterparty> 
         this.context = context;
         this.layoutResourceId = layoutResourceId;
         this.result = result;
+    }
+
+    public void setResult(List<Counterparty> result) {
+        this.result = result;
+        notifyDataSetChanged();
     }
 
     @Override
