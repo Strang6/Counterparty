@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.strang6.counterparty.AddressCoordinates;
 import com.strang6.counterparty.ApiServices.DaDataService;
 import com.strang6.counterparty.Counterparty;
 import com.strang6.counterparty.Logger;
@@ -40,6 +42,11 @@ public class MainViewModel extends AndroidViewModel {
         this.listener = counterpartyListener;
         if (result != null)
             listener.onFindCounterparties(result);
+    }
+
+    public void resetCounterpartyListener() {
+        Logger.d("MainViewModel.resetCounterpartyListener");
+        listener = null;
     }
 
     public void onCounterpartyClick(Counterparty counterparty) {
@@ -83,23 +90,27 @@ public class MainViewModel extends AndroidViewModel {
         @Override
         protected Void doInBackground(Counterparty... counterparties) {
             Logger.d("MainViewModel.AddAsyncTask.doInBackground");
+
+            Counterparty counterparty = counterparties[0];
+            String name = counterparty.getName();
+            String inn = counterparty.getInn();
+            String kpp = counterparty.getKpp();
+
             RecentCounterpartyDAO dao = database.getRecentCounterpartyDAO();
-            RecentCounterparty recentCounterparty = dao
-                    .getItemByNameInnKpp(counterparties[0].getName(), counterparties[0].getInn(), counterparties[0].getKpp());
+            RecentCounterparty recentCounterparty = dao.getItemByNameInnKpp(name, inn, kpp);
+
             if (recentCounterparty != null) {
                 recentCounterparty.setUploadDate(new Date());
                 dao.updateItem(recentCounterparty);
             } else {
-                recentCounterparty = new RecentCounterparty(counterparties[0], new Date(), false);
-                database.getRecentCounterpartyDAO().addRecentCounterparty(recentCounterparty);
+                recentCounterparty = new RecentCounterparty(counterparty, new Date(), false);
+                dao.addRecentCounterparty(recentCounterparty);
+                recentCounterparty = dao.getItemByNameInnKpp(name, inn, kpp);
+                AddressCoordinates coordinates = new AddressCoordinates(recentCounterparty.getId(), counterparty.getLatLng());
+                database.getAddressCoordinatesDAO().addCoordinates(coordinates);
             }
+
             if (listener != null) {
-                String name = recentCounterparty.getCounterparty().getName();
-                String inn = recentCounterparty.getCounterparty().getInn();
-                String kpp = recentCounterparty.getCounterparty().getKpp();
-                recentCounterparty = database
-                        .getRecentCounterpartyDAO()
-                        .getItemByNameInnKpp(name, inn, kpp);
                 listener.onItemAdd(recentCounterparty.getId());
             }
             return null;
@@ -118,7 +129,8 @@ public class MainViewModel extends AndroidViewModel {
         protected void onPostExecute(List<Counterparty> counterparties) {
             Logger.d("MainViewModel.FindCounterpartiesAsyncTask.onPostExecute");
             result = counterparties;
-            listener.onFindCounterparties(counterparties);
+            if (listener != null)
+                listener.onFindCounterparties(counterparties);
         }
     }
 

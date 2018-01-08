@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements MainViewModel.Cou
         adapter = new CounterpartyAutoCompleteAdapter(this, R.layout.counterparty_item, new ArrayList<Counterparty>());
         counterpartyTextView.setAdapter(adapter);
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        viewModel.setCounterpartyListener(this);
         counterpartyTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -67,6 +66,20 @@ public class MainActivity extends AppCompatActivity implements MainViewModel.Cou
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Logger.d("MainActivity.onResume");
+        viewModel.setCounterpartyListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Logger.d("MainActivity.onPause");
+        viewModel.resetCounterpartyListener();
     }
 
     public void onRecentButtonClick(View view) {

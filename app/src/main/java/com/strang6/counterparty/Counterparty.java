@@ -1,9 +1,11 @@
 package com.strang6.counterparty;
 
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.TypeConverters;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.strang6.counterparty.database.converters.BranchTypeConverter;
 import com.strang6.counterparty.database.converters.OrganizationTypeConverter;
 
@@ -15,10 +17,15 @@ public class Counterparty implements Parcelable{
     private String name, opf, address;
     private String inn, kpp, ogrn;
     private int branchCount;
+
     @TypeConverters(BranchTypeConverter.class)
     private BranchType branchType;
+
     @TypeConverters(OrganizationTypeConverter.class)
     private OrganizationType type;
+
+    @Ignore
+    private LatLng latLng;
 
     public Counterparty(String name, String opf, String address, String inn, String kpp, String ogrn, int branchCount, BranchType branchType, OrganizationType type) {
         this.name = name;
@@ -30,6 +37,20 @@ public class Counterparty implements Parcelable{
         this.branchCount = branchCount;
         this.branchType = branchType;
         this.type = type;
+    }
+
+    @Ignore
+    public Counterparty(String name, String opf, String address, String inn, String kpp, String ogrn, int branchCount, BranchType branchType, OrganizationType type, LatLng latLng) {
+        this.name = name;
+        this.opf = opf;
+        this.address = address;
+        this.inn = inn;
+        this.kpp = kpp;
+        this.ogrn = ogrn;
+        this.branchCount = branchCount;
+        this.branchType = branchType;
+        this.type = type;
+        this.latLng = latLng;
     }
 
     protected Counterparty(Parcel in) {
@@ -66,6 +87,13 @@ public class Counterparty implements Parcelable{
                 .append("; ИНН: ").append(inn)
                 .append("; КПП: ").append(kpp)
                 .append("; ОГРН: ").append(ogrn);
+        if (latLng != null) {
+            stringBuilder.append(": lat: ").append(latLng.latitude)
+                    .append("; lng: ").append(latLng.longitude);
+        }
+        else {
+            stringBuilder.append("; latLng: ").append("null");
+        }
         return stringBuilder.toString();
     }
 
@@ -141,6 +169,14 @@ public class Counterparty implements Parcelable{
         this.type = type;
     }
 
+    public LatLng getLatLng() {
+        return latLng;
+    }
+
+    public void setLatLng(LatLng latLng) {
+        this.latLng = latLng;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -160,7 +196,7 @@ public class Counterparty implements Parcelable{
     }
 
     public enum BranchType {
-        MAIN, BRANCH
+        MAIN, BRANCH, NULL
 
     }
 
