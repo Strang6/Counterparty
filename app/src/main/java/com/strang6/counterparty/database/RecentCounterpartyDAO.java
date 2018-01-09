@@ -25,7 +25,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @TypeConverters({BranchTypeConverter.class, OrganizationTypeConverter.class, DateConverter.class})
 public interface RecentCounterpartyDAO {
     @Query("SELECT * FROM RecentCounterparty")
-    LiveData<List<RecentCounterparty>> getAllRecentCounterparties();
+    List<RecentCounterparty> getAllRecentCounterparties();
 
     @Query("SELECT * FROM RecentCounterparty WHERE id = :id")
     RecentCounterparty getItemById(String id);
