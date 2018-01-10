@@ -19,7 +19,8 @@ import com.strang6.counterparty.map.MapActivity;
 public class DetailsActivity extends AppCompatActivity implements DetailsViewModel.LoadDataListener {
 
     private TextView nameTextView, opfTextView, addressTextView, innTextView, kppTextView,
-            ogrnTextView, branchCountTextView, branchTypeTextView, typeTextView;
+            ogrnTextView, branchCountTextView, branchTypeTextView, typeTextView,
+            opfHintTextView, innHintTextView, kppHintTextView, branchCountHintTextView, branchTypeHintTextView;
     private Button mapButton;
     private DetailsViewModel viewModel;
 
@@ -36,9 +37,15 @@ public class DetailsActivity extends AppCompatActivity implements DetailsViewMod
         innTextView = findViewById(R.id.inn);
         kppTextView = findViewById(R.id.kpp);
         ogrnTextView = findViewById(R.id.ogrn);
-        branchCountTextView = findViewById(R.id.branchCount);
-        branchTypeTextView = findViewById(R.id.branchType);
+        branchCountTextView = findViewById(R.id.branch_count);
+        branchTypeTextView = findViewById(R.id.branch_type);
         typeTextView = findViewById(R.id.type);
+
+        opfHintTextView = findViewById(R.id.opf_hint);
+        innHintTextView = findViewById(R.id.inn_hint);
+        kppHintTextView = findViewById(R.id.kpp_hint);
+        branchCountHintTextView = findViewById(R.id.branch_count_hint);
+        branchTypeHintTextView = findViewById(R.id.branch_type_hint);
 
         mapButton = findViewById(R.id.mapButton);
         final int id = getIntent().getExtras().getInt("id");
@@ -109,13 +116,33 @@ public class DetailsActivity extends AppCompatActivity implements DetailsViewMod
 
         Counterparty counterparty = recentCounterparty.getCounterparty();
         nameTextView.setText(counterparty.getName());
-        opfTextView.setText(counterparty.getOpf());
+        if (counterparty.getOpf().equals("-")) {
+            opfHintTextView.setVisibility(View.GONE);
+            opfTextView.setVisibility(View.GONE);
+        } else
+            opfTextView.setText(counterparty.getOpf());
         addressTextView.setText(counterparty.getAddress());
-        innTextView.setText(counterparty.getInn());
-        kppTextView.setText(counterparty.getKpp());
+        if (counterparty.getInn().equals("-")) {
+            innHintTextView.setVisibility(View.GONE);
+            innTextView.setVisibility(View.GONE);
+        } else
+            innTextView.setText(counterparty.getInn());
+        if (counterparty.getKpp().equals("-")) {
+            kppHintTextView.setVisibility(View.GONE);
+            kppTextView.setVisibility(View.GONE);
+        } else
+            kppTextView.setText(counterparty.getKpp());
         ogrnTextView.setText(counterparty.getOgrn());
-        branchCountTextView.setText(Integer.toString(counterparty.getBranchCount()));
-        branchTypeTextView.setText(counterparty.getBranchType() == Counterparty.BranchType.MAIN ? "головная организация" : "филиал");
+        if (counterparty.getBranchCount() == -1) {
+            branchCountHintTextView.setVisibility(View.GONE);
+            branchCountTextView.setVisibility(View.GONE);
+        } else
+            branchCountTextView.setText(Integer.toString(counterparty.getBranchCount()));
+        if (counterparty.getBranchType() == Counterparty.BranchType.NULL) {
+            branchTypeHintTextView.setVisibility(View.GONE);
+            branchTypeTextView.setVisibility(View.GONE);
+        } else
+            branchTypeTextView.setText(counterparty.getBranchType() == Counterparty.BranchType.MAIN ? "головная организация" : "филиал");
         typeTextView.setText(counterparty.getType() == Counterparty.OrganizationType.LEGAL ? "юридическое лицо" : "индивидуальный предприниматель");
 
         invalidateOptionsMenu();

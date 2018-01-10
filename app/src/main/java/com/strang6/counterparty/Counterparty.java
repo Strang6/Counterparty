@@ -86,7 +86,10 @@ public class Counterparty implements Parcelable{
                 .append("; Адрес: ").append(address)
                 .append("; ИНН: ").append(inn)
                 .append("; КПП: ").append(kpp)
-                .append("; ОГРН: ").append(ogrn);
+                .append("; ОГРН: ").append(ogrn)
+                .append("; Количество филиалов: ").append(branchCount)
+                .append("; Тип подразделения: ").append(branchType)
+                .append("; Тип организации: ").append(type);
         if (latLng != null) {
             stringBuilder.append(": lat: ").append(latLng.latitude)
                     .append("; lng: ").append(latLng.longitude);
