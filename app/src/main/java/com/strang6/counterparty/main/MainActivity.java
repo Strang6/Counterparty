@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
+import android.widget.Toast;
 
 import com.strang6.counterparty.Counterparty;
 import com.strang6.counterparty.details.DetailsActivity;
@@ -99,6 +100,10 @@ public class MainActivity extends AppCompatActivity implements MainViewModel.Cou
     @Override
     public void onFindCounterparties(List<Counterparty> counterparties) {
         Logger.d("MainActivity.onFindCounterparties");
-        adapter.setResult(counterparties);
+        if (counterparties != null) {
+            adapter.setResult(counterparties);
+        } else {
+            Toast.makeText(this, "Не удалось выполнить запрос", Toast.LENGTH_SHORT).show();
+        }
     }
 }

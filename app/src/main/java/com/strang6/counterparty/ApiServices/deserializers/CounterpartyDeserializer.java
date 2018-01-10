@@ -51,11 +51,13 @@ public class CounterpartyDeserializer implements JsonDeserializer<Counterparty> 
                 branchType = Counterparty.BranchType.NULL;
             Counterparty.OrganizationType type = Counterparty.OrganizationType.valueOf(data.get("type").getAsString());
             LatLng latLng = null;
-            if (! jsonAddress.get("data").isJsonNull()) {
+            if (!jsonAddress.get("data").isJsonNull()) {
                 data = jsonAddress.getAsJsonObject("data");
-                String lat = data.get("geo_lat").getAsString();
-                String lng = data.get("geo_lon").getAsString();
-                latLng = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+                if (!data.get("geo_lat").isJsonNull() && !data.get("geo_lon").isJsonNull()) {
+                    String lat = data.get("geo_lat").getAsString();
+                    String lng = data.get("geo_lon").getAsString();
+                    latLng = new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+                }
             }
             counterparty =
                     new Counterparty(name, opf, address, inn, kpp, ogrn, branchCount, branchType, type, latLng);

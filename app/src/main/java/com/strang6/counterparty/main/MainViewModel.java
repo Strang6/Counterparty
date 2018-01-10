@@ -71,7 +71,7 @@ public class MainViewModel extends AndroidViewModel {
                 handler.removeMessages(TEXT_CHANGED);
             }
             Message msg = handler.obtainMessage(TEXT_CHANGED, charSequence.toString());
-            Logger.d("handler.sendMessageDelayed, obj = " + msg.obj);
+            Logger.d("MainViewModel.onTextChanged: handler.sendMessageDelayed, obj = " + msg.obj);
             handler.sendMessageDelayed(msg, delay);
         } else {
             if (handler != null) {
@@ -106,8 +106,10 @@ public class MainViewModel extends AndroidViewModel {
                 recentCounterparty = new RecentCounterparty(counterparty, new Date(), false);
                 dao.addRecentCounterparty(recentCounterparty);
                 recentCounterparty = dao.getItemByNameInnKpp(name, inn, kpp);
-                AddressCoordinates coordinates = new AddressCoordinates(recentCounterparty.getId(), counterparty.getLatLng());
-                database.getAddressCoordinatesDAO().addCoordinates(coordinates);
+                if (counterparty.getLatLng() != null) {
+                    AddressCoordinates coordinates = new AddressCoordinates(recentCounterparty.getId(), counterparty.getLatLng());
+                    database.getAddressCoordinatesDAO().addCoordinates(coordinates);
+                }
             }
 
             if (listener != null) {

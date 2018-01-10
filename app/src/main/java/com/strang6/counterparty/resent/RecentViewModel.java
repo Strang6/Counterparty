@@ -50,6 +50,11 @@ public class RecentViewModel extends AndroidViewModel {
 
     public void onSwiped(RecentCounterparty recentCounterparty) {
         Logger.d("RecentViewModel.onSwiped");
+        allData.remove(recentCounterparty);
+        filterData.remove(recentCounterparty);
+        if (listener != null) {
+            listener.onDataChange(filterData);
+        }
         new DeleteAsyncTask(database).execute(recentCounterparty);
     }
 

@@ -10,53 +10,62 @@ import com.strang6.counterparty.Logger;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Strang6 on 21.11.2017.
  */
 
 public class DaDataService {
-    private static final String url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/party",
-            token = "84de1dfbc2cd5f109e9e4f3f8a283c1f64dfda33";
+    private static final String URL = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/",
+            API_KEY = "84de1dfbc2cd5f109e9e4f3f8a283c1f64dfda33";
+    private DaDataApi daData;
+
+    public DaDataService() {
+        Logger.d("DaDataService.DaDataService");
+
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .addInterceptor(interceptor)
+                .build();
+
+        Type type = new TypeToken<List<Counterparty>>() {}.getType();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(type, new CounterpartyListDeserializer())
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(client)
+                .baseUrl(URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        daData = retrofit.create(DaDataApi.class);
+    }
 
     public List<Counterparty> findCounterparties(String query) {
         Logger.d("DaDataService.findCounterparties(query = " + query + ")");
 
-        String content = "{ \"query\": \"" + query + "\" }";
-        MediaType contentType = MediaType.parse("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(contentType, content);
-        Request request = new Request.Builder()
-                .url(url)
-                .header("Accept", "application/json")
-                .header("Authorization", "Token " + token)
-                .post(body)
-                .build();
-        String result = null;
+        Call<List<Counterparty>> call = daData.party("Token " + API_KEY, new DaDataBody(query));
+        List<Counterparty> result = null;
         try {
-            OkHttpClient client = new OkHttpClient();
-            Response response = client.newCall(request).execute();
-            result = response.body().string();
+            Response response = call.execute();
+            result = (List<Counterparty>) response.body();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return jsonToList(result);
-    }
-
-    private List<Counterparty> jsonToList(String json) {
-        Logger.d("DaDataService.jsonToList(json = " + json + ")");
-
-        Type type = new TypeToken<List<Counterparty>>() {
-        }.getType();
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(type, new CounterpartyListDeserializer())
-                .create();
-        return gson.fromJson(json, type);
+        return result;
     }
 }
