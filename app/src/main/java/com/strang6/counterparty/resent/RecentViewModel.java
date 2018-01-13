@@ -86,7 +86,9 @@ public class RecentViewModel extends AndroidViewModel {
             filterData = new ArrayList<>();
             for (RecentCounterparty counterparty: allData) {
                 String name = counterparty.getCounterparty().getName();
-                if (name.toLowerCase().contains(filter.toLowerCase())) {
+                String inn = counterparty.getCounterparty().getInn();
+                if (name.toLowerCase().contains(filter.toLowerCase()) ||
+                        inn.contains(filter)) {
                     filterData.add(counterparty);
                 }
             }
