@@ -1,5 +1,7 @@
 package com.strang6.counterparty.ApiServices;
 
+import android.util.Base64;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,18 +23,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class GeocodingService {
-    private final static String API_KEY = "AIzaSyB6BoBZZ2mItJ7xtF8GuVRiewo0-ZRwp9Q",
-    URL = "https://maps.googleapis.com/maps/api/";
+    private final static String URL = "https://maps.googleapis.com/maps/api/";
     private GeocodingApi geocoding;
 
+    static {
+        System.loadLibrary("keys");
+    }
+
+    private native String getGeocodingKey();
+
     public GeocodingService() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder()
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .connectTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor(interceptor)
                 .build();
 
         Gson gson = new GsonBuilder()
@@ -51,7 +55,8 @@ public class GeocodingService {
     public LatLng findLatLng(String address) {
         Logger.d("GeocodingService.findLatLng(address = " + address + ")");
 
-        Call<LatLng> call = geocoding.geocode(address, API_KEY);
+        String key = new String(Base64.decode(getGeocodingKey(), Base64.DEFAULT));
+        Call<LatLng> call = geocoding.geocode(address, key);
         LatLng result = null;
         try {
             Response response = call.execute();
