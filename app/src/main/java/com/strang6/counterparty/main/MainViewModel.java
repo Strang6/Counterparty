@@ -1,13 +1,12 @@
 package com.strang6.counterparty.main;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.strang6.counterparty.AddressCoordinates;
 import com.strang6.counterparty.ApiServices.DaDataService;
 import com.strang6.counterparty.Counterparty;
@@ -23,18 +22,19 @@ import java.util.List;
  * Created by Strang6 on 10.12.2017.
  */
 
-public class MainViewModel extends AndroidViewModel {
+public class MainViewModel extends ViewModel {
     private CounterpartyDatabase database;
+    private DaDataService daDataService;
     private CounterpartyListener listener;
     private List<Counterparty> result;
     private Handler handler;
     private final int TEXT_CHANGED = 0;
     private final int delay = 1000;
 
-    public MainViewModel(@NonNull Application application) {
-        super(application);
+    public MainViewModel(CounterpartyDatabase database, DaDataService daDataService) {
         Logger.d("MainViewModel.MainViewModel");
-        database = CounterpartyDatabase.getDatabase(application);
+        this.database = database;
+        this.daDataService = daDataService;
     }
 
     public void setCounterpartyListener(CounterpartyListener counterpartyListener) {
@@ -63,7 +63,7 @@ public class MainViewModel extends AndroidViewModel {
                     public void handleMessage(Message msg) {
                         Logger.d("MainViewModel.Handler.handleMessage, obj = " + msg.obj);
                         if (msg.what == TEXT_CHANGED) {
-                            new FindCounterpartiesAsyncTask().execute((String) msg.obj);
+                            new FindCounterpartiesAsyncTask(daDataService).execute((String) msg.obj);
                         }
                     }
                 };
@@ -120,11 +120,16 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     private class FindCounterpartiesAsyncTask extends AsyncTask<String, Void, List<Counterparty>> {
+        private DaDataService daDataService;
+
+        private FindCounterpartiesAsyncTask(DaDataService daDataService) {
+            this.daDataService = daDataService;
+        }
 
         @Override
         protected List<Counterparty> doInBackground(String... strings) {
             Logger.d("MainViewModel.FindCounterpartiesAsyncTask.doInBackground");
-            return new DaDataService().findCounterparties(strings[0]);
+            return daDataService.findCounterparties(strings[0]);
         }
 
         @Override
@@ -139,5 +144,21 @@ public class MainViewModel extends AndroidViewModel {
     public interface CounterpartyListener {
         void onItemAdd(int id);
         void onFindCounterparties(List<Counterparty> counterparties);
+    }
+
+    public static class Factory extends ViewModelProvider.NewInstanceFactory {
+        private CounterpartyDatabase database;
+        private DaDataService daDataService;
+
+        public Factory(CounterpartyDatabase database, DaDataService daDataService) {
+            this.database = database;
+            this.daDataService = daDataService;
+        }
+
+        @NonNull
+        @Override
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) new MainViewModel(database, daDataService);
+        }
     }
 }

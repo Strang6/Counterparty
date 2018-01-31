@@ -1,7 +1,7 @@
 package com.strang6.counterparty.details;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
@@ -13,16 +13,15 @@ import com.strang6.counterparty.database.CounterpartyDatabase;
  * Created by Strang6 on 11.12.2017.
  */
 
-public class DetailsViewModel extends AndroidViewModel {
+public class DetailsViewModel extends ViewModel {
     private CounterpartyDatabase database;
     private RecentCounterparty recentCounterparty;
     private LoadDataListener loadDataListener;
     private int id;
 
-    public DetailsViewModel(@NonNull Application application) {
-        super(application);
+    public DetailsViewModel(CounterpartyDatabase database) {
         Logger.d("DetailsViewModel.DetailsViewModel");
-        database = CounterpartyDatabase.getDatabase(application);
+        this.database = database;
     }
 
     public RecentCounterparty getRecentCounterparty() {
@@ -95,5 +94,19 @@ public class DetailsViewModel extends AndroidViewModel {
 
     public interface LoadDataListener {
         void onLoadData(RecentCounterparty recentCounterparty);
+    }
+
+    public static class Factory extends ViewModelProvider.NewInstanceFactory {
+        private CounterpartyDatabase database;
+
+        public Factory(CounterpartyDatabase database) {
+            this.database = database;
+        }
+
+        @NonNull
+        @Override
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) new DetailsViewModel(database);
+        }
     }
 }

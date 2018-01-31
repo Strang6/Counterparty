@@ -11,7 +11,9 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
+import com.strang6.counterparty.ApiServices.DaDataService;
 import com.strang6.counterparty.Counterparty;
+import com.strang6.counterparty.database.CounterpartyDatabase;
 import com.strang6.counterparty.details.DetailsActivity;
 import com.strang6.counterparty.Logger;
 import com.strang6.counterparty.R;
@@ -36,7 +38,9 @@ public class MainActivity extends AppCompatActivity implements MainViewModel.Cou
         counterpartyTextView = findViewById(R.id.counterpartyTextView);
         adapter = new CounterpartyAutoCompleteAdapter(this, R.layout.counterparty_item, new ArrayList<Counterparty>());
         counterpartyTextView.setAdapter(adapter);
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        CounterpartyDatabase database = CounterpartyDatabase.getDatabase(getApplicationContext());
+        MainViewModel.Factory factory = new MainViewModel.Factory(database, new DaDataService());
+        viewModel = ViewModelProviders.of(this, factory).get(MainViewModel.class);
         counterpartyTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

@@ -16,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
 import com.strang6.counterparty.Logger;
+import com.strang6.counterparty.database.CounterpartyDatabase;
 import com.strang6.counterparty.details.DetailsActivity;
 import com.strang6.counterparty.R;
 import com.strang6.counterparty.RecentCounterparty;
@@ -43,7 +44,9 @@ public class RecentActivity extends AppCompatActivity implements RecentViewModel
                 new OnViewClickListener(), new OnFavoriteClickListener());
         recyclerView.setAdapter(adapter);
 
-        viewModel = ViewModelProviders.of(this).get(RecentViewModel.class);
+        RecentViewModel.Factory factory = new RecentViewModel
+                .Factory(CounterpartyDatabase.getDatabase(getApplicationContext()));
+        viewModel = ViewModelProviders.of(this, factory).get(RecentViewModel.class);
 
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override

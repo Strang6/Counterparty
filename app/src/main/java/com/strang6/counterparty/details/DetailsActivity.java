@@ -14,6 +14,7 @@ import com.strang6.counterparty.Counterparty;
 import com.strang6.counterparty.Logger;
 import com.strang6.counterparty.R;
 import com.strang6.counterparty.RecentCounterparty;
+import com.strang6.counterparty.database.CounterpartyDatabase;
 import com.strang6.counterparty.map.MapActivity;
 
 public class DetailsActivity extends AppCompatActivity implements DetailsViewModel.LoadDataListener {
@@ -58,7 +59,9 @@ public class DetailsActivity extends AppCompatActivity implements DetailsViewMod
             }
         });
 
-        viewModel = ViewModelProviders.of(this).get(DetailsViewModel.class);
+        DetailsViewModel.Factory factory = new DetailsViewModel
+                .Factory(CounterpartyDatabase.getDatabase(getApplicationContext()));
+        viewModel = ViewModelProviders.of(this, factory).get(DetailsViewModel.class);
         viewModel.setId(id);
         viewModel.setLoadDataListener(this);
     }

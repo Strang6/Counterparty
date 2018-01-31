@@ -1,7 +1,7 @@
 package com.strang6.counterparty.map;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
@@ -16,25 +16,30 @@ import com.strang6.counterparty.database.CounterpartyDatabase;
  * Created by Strang6 on 12.12.2017.
  */
 
-public class MapViewModel extends AndroidViewModel {
+public class MapViewModel extends ViewModel {
     private CounterpartyDatabase database;
+    private GeocodingService geocodingService;
     private LoadCoordinatesListener listener;
     private int id;
     private LatLng latLng;
     private boolean isLoad;
 
-    public MapViewModel(@NonNull Application application) {
-        super(application);
+    public MapViewModel(CounterpartyDatabase database, GeocodingService geocodingService) {
         Logger.d("MapViewModel.MapViewModel");
-        database = CounterpartyDatabase.getDatabase(application);
+        this.database = database;
+        this.geocodingService = geocodingService;
         isLoad = false;
+    }
+
+    public LatLng getLatLng() {
+        return latLng;
     }
 
     public void setId(int id) {
         Logger.d("MapViewModel.setId(id = " + id + ")");
         if (this.id != id) {
             this.id = id;
-            new LoadCoordinatesTask(database).execute(id);
+            new LoadCoordinatesTask(database, geocodingService).execute(id);
         }
     }
 
@@ -47,9 +52,11 @@ public class MapViewModel extends AndroidViewModel {
 
     private class LoadCoordinatesTask extends AsyncTask<Integer, Void, LatLng> {
         private CounterpartyDatabase database;
+        private GeocodingService geocodingService;
 
-        private LoadCoordinatesTask(CounterpartyDatabase database) {
+        private LoadCoordinatesTask(CounterpartyDatabase database, GeocodingService geocodingService) {
             this.database = database;
+            this.geocodingService = geocodingService;
         }
 
         @Override
@@ -58,7 +65,7 @@ public class MapViewModel extends AndroidViewModel {
             LatLng latLng = database.getAddressCoordinatesDAO().getCoordinatesById(id[0].toString());
             if (latLng == null) {
                 RecentCounterparty recentCounterparty = database.getRecentCounterpartyDAO().getItemById(id[0].toString());
-                latLng = new GeocodingService().findLatLng(recentCounterparty.getCounterparty().getAddress());
+                latLng = geocodingService.findLatLng(recentCounterparty.getCounterparty().getAddress());
                 if (latLng != null) {
                     AddressCoordinates coordinates = new AddressCoordinates(id[0], latLng);
                     database.getAddressCoordinatesDAO().addCoordinates(coordinates);
@@ -80,5 +87,21 @@ public class MapViewModel extends AndroidViewModel {
 
     public interface LoadCoordinatesListener {
         void onLoadCoordinates(LatLng latLng);
+    }
+
+    public static class Factory extends ViewModelProvider.NewInstanceFactory {
+        private CounterpartyDatabase database;
+        private GeocodingService geocodingService;
+
+        public Factory(CounterpartyDatabase database, GeocodingService geocodingService) {
+            this.database = database;
+            this.geocodingService = geocodingService;
+        }
+
+        @NonNull
+        @Override
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) new MapViewModel(database, geocodingService);
+        }
     }
 }

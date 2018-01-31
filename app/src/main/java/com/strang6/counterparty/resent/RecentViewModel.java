@@ -1,7 +1,7 @@
 package com.strang6.counterparty.resent;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
@@ -19,15 +19,14 @@ import java.util.List;
  * Created by Strang6 on 09.12.2017.
  */
 
-public class RecentViewModel extends AndroidViewModel {
+public class RecentViewModel extends ViewModel {
     private List<RecentCounterparty> allData, filterData;
     private CounterpartyDatabase database;
     private DataChangeListener listener;
 
-    public RecentViewModel(@NonNull Application application) {
-        super(application);
+    public RecentViewModel(CounterpartyDatabase database) {
         Logger.d("RecentViewModel.RecentViewModel");
-        database = CounterpartyDatabase.getDatabase(application);
+        this.database = database;
         new LoadAsyncTask(database).execute();
     }
 
@@ -172,5 +171,19 @@ public class RecentViewModel extends AndroidViewModel {
 
     public interface DataChangeListener{
         void onDataChange(List<RecentCounterparty> data);
+    }
+
+    public static class Factory extends ViewModelProvider.NewInstanceFactory {
+        private CounterpartyDatabase database;
+
+        public Factory(CounterpartyDatabase database) {
+            this.database = database;
+        }
+
+        @NonNull
+        @Override
+        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            return (T) new RecentViewModel(database);
+        }
     }
 }
