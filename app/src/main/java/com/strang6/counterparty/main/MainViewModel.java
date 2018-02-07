@@ -25,6 +25,7 @@ import java.util.List;
 public class MainViewModel extends ViewModel {
     private CounterpartyDatabase database;
     private DaDataService daDataService;
+
     private CounterpartyListener listener;
     private List<Counterparty> result;
     private Handler handler;

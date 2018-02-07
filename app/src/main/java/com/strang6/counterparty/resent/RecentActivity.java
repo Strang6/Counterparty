@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 
+import com.strang6.counterparty.App;
 import com.strang6.counterparty.Logger;
 import com.strang6.counterparty.database.CounterpartyDatabase;
 import com.strang6.counterparty.details.DetailsActivity;
@@ -24,11 +25,18 @@ import com.strang6.counterparty.RecentCounterparty;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class RecentActivity extends AppCompatActivity implements RecentViewModel.DataChangeListener{
+
+    private final int DETAILS_REQ = 1;
 
     private RecyclerView recyclerView;
     private RecyclerViewAdapter adapter;
     private RecentViewModel viewModel;
+
+    @Inject
+    CounterpartyDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +52,9 @@ public class RecentActivity extends AppCompatActivity implements RecentViewModel
                 new OnViewClickListener(), new OnFavoriteClickListener());
         recyclerView.setAdapter(adapter);
 
+        App.get().getScreenComponent().inject(this);
         RecentViewModel.Factory factory = new RecentViewModel
-                .Factory(CounterpartyDatabase.getDatabase(getApplicationContext()));
+                .Factory(database);
         viewModel = ViewModelProviders.of(this, factory).get(RecentViewModel.class);
 
         ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -116,7 +125,18 @@ public class RecentActivity extends AppCompatActivity implements RecentViewModel
             viewModel.onRecentCounterpartyClick(recentCounterparty);
             Intent intent = new Intent(RecentActivity.this, DetailsActivity.class);
             intent.putExtra("id", recentCounterparty.getId());
-            startActivity(intent);
+            startActivityForResult(intent, DETAILS_REQ);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Logger.d("RecentActivity: onActivityResult(" + requestCode + "," + resultCode + ")");
+        if (requestCode == DETAILS_REQ) {
+            if (resultCode == DetailsActivity.RESULT_CHANGE) {
+                int id = data.getExtras().getInt(DetailsActivity.ID);
+                viewModel.onFavoriteChanged(id);
+            }
         }
     }
 

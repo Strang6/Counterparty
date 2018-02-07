@@ -67,6 +67,20 @@ public class RecentViewModel extends ViewModel {
         new UpdateAsyncTask(database).execute(recentCounterparty);
     }
 
+    public void onFavoriteChanged(int id) {
+        Logger.d("RecentViewModel.onFavoriteChanged(id = " + id + ")");
+        for (RecentCounterparty recentCounterparty: filterData) {
+            if (recentCounterparty.getId() == id) {
+                recentCounterparty.setFavorite(!recentCounterparty.isFavorite());
+                sortFilterData();
+                if (listener != null) {
+                    listener.onDataChange(filterData);
+                }
+                break;
+            }
+        }
+    }
+
     public void onRecentCounterpartyClick(RecentCounterparty recentCounterparty) {
         Logger.d("RecentViewModel.onRecentCounterpartyClick");
         recentCounterparty.setUploadDate(new Date());

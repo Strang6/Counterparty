@@ -13,15 +13,23 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.strang6.counterparty.ApiServices.GeocodingService;
+import com.strang6.counterparty.App;
 import com.strang6.counterparty.Logger;
 import com.strang6.counterparty.R;
 import com.strang6.counterparty.database.CounterpartyDatabase;
+
+import javax.inject.Inject;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, MapViewModel.LoadCoordinatesListener {
 
     private SupportMapFragment mapFragment;
     private GoogleMap map;
     private MapViewModel viewModel;
+
+    @Inject
+    CounterpartyDatabase database;
+    @Inject
+    GeocodingService geocodingService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +42,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        App.get().getScreenComponent().inject(this);
         MapViewModel.Factory factory = new MapViewModel
-                .Factory(CounterpartyDatabase.getDatabase(getApplicationContext()), new GeocodingService());
+                .Factory(database, geocodingService);
         viewModel = ViewModelProviders.of(this, factory).get(MapViewModel.class);
         viewModel.setId(id);
     }

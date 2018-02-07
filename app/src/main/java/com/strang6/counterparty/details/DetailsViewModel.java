@@ -37,6 +37,11 @@ public class DetailsViewModel extends ViewModel {
         }
     }
 
+    public int getId() {
+        Logger.d("DetailsViewModel.getId: id = " + id);
+        return id;
+    }
+
     public void setLoadDataListener(LoadDataListener listener) {
         Logger.d("DetailsViewModel.setLoadDataListener");
         loadDataListener = listener;

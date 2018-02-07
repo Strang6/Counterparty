@@ -12,6 +12,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import com.strang6.counterparty.ApiServices.DaDataService;
+import com.strang6.counterparty.App;
 import com.strang6.counterparty.Counterparty;
 import com.strang6.counterparty.database.CounterpartyDatabase;
 import com.strang6.counterparty.details.DetailsActivity;
@@ -22,12 +23,20 @@ import com.strang6.counterparty.resent.RecentActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class MainActivity extends AppCompatActivity implements MainViewModel.CounterpartyListener {
 
     private AutoCompleteTextView counterpartyTextView;
-    private MainViewModel viewModel;
     private CounterpartyAutoCompleteAdapter adapter;
     private boolean isSetText;
+
+    @Inject
+    CounterpartyDatabase database;
+    @Inject
+    DaDataService daDataService;
+
+    private MainViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +47,10 @@ public class MainActivity extends AppCompatActivity implements MainViewModel.Cou
         counterpartyTextView = findViewById(R.id.counterpartyTextView);
         adapter = new CounterpartyAutoCompleteAdapter(this, R.layout.counterparty_item, new ArrayList<Counterparty>());
         counterpartyTextView.setAdapter(adapter);
-        CounterpartyDatabase database = CounterpartyDatabase.getDatabase(getApplicationContext());
-        MainViewModel.Factory factory = new MainViewModel.Factory(database, new DaDataService());
+
+        App.get().getScreenComponent().inject(this);
+
+        MainViewModel.Factory factory = new MainViewModel.Factory(database, daDataService);
         viewModel = ViewModelProviders.of(this, factory).get(MainViewModel.class);
         counterpartyTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

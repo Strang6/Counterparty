@@ -10,12 +10,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.strang6.counterparty.App;
 import com.strang6.counterparty.Counterparty;
 import com.strang6.counterparty.Logger;
 import com.strang6.counterparty.R;
 import com.strang6.counterparty.RecentCounterparty;
 import com.strang6.counterparty.database.CounterpartyDatabase;
 import com.strang6.counterparty.map.MapActivity;
+
+import javax.inject.Inject;
 
 public class DetailsActivity extends AppCompatActivity implements DetailsViewModel.LoadDataListener {
 
@@ -24,6 +27,12 @@ public class DetailsActivity extends AppCompatActivity implements DetailsViewMod
             opfHintTextView, innHintTextView, kppHintTextView, branchCountHintTextView, branchTypeHintTextView;
     private Button mapButton;
     private DetailsViewModel viewModel;
+    private boolean isFavoriteChange;
+    public static final int RESULT_CHANGE = 5;
+    public static final String ID = "id";
+
+    @Inject
+    CounterpartyDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +68,10 @@ public class DetailsActivity extends AppCompatActivity implements DetailsViewMod
             }
         });
 
+        App.get().getScreenComponent().inject(this);
+
         DetailsViewModel.Factory factory = new DetailsViewModel
-                .Factory(CounterpartyDatabase.getDatabase(getApplicationContext()));
+                .Factory(database);
         viewModel = ViewModelProviders.of(this, factory).get(DetailsViewModel.class);
         viewModel.setId(id);
         viewModel.setLoadDataListener(this);
@@ -72,10 +83,22 @@ public class DetailsActivity extends AppCompatActivity implements DetailsViewMod
 
         if (item.getItemId() ==  R.id.favorite_check) {
             item.setChecked(!item.isChecked());
+            isFavoriteChange = !isFavoriteChange;
             invalidateOptionsMenu();
             viewModel.onFavoriteChanged(item.isChecked());
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Logger.d("DetailsActivity.onBackPressed");
+        if (isFavoriteChange) {
+            Intent intent = new Intent();
+            intent.putExtra(ID, viewModel.getId());
+            setResult(RESULT_CHANGE, intent);
+        }
+        super.onBackPressed();
     }
 
     @Override
